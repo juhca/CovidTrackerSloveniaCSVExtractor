@@ -53,13 +53,14 @@ namespace IndigoLabs2.Services
                 }
                 output.Add(dynamicObject);
             }
-            var tmp = output.Where(x => DateTime.Parse(((IDictionary<string, object>)x)["date"].ToString()) >= dateFrom)
-                            .Where(x => DateTime.Parse(((IDictionary<string, object>)x)["date"].ToString()) <= dateTo)
-                            .ToList();
+            var tmp = output.Where(x => DateTime.Parse(((IDictionary<string, object>)x)["date"].ToString()) >= dateFrom 
+                && DateTime.Parse(((IDictionary<string, object>)x)["date"].ToString()) <= dateTo)
+                .ToList();
 
             List<CSVCase> finalResult = new List<CSVCase>();
 
             string regionFulName = ((System.ComponentModel.DataAnnotations.DisplayAttribute)csvColumnIndex.GetType().GetMember(csvColumnIndex.ToString()).First().GetCustomAttributes(true).First()).Name + " (" + csvColumnIndex + ")";
+            region = region.ToLower();
 
             foreach (var record in tmp)
             {
