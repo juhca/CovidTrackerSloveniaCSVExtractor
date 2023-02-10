@@ -37,11 +37,9 @@ https://localhost:5001/api/region/lastweek
 
 https://localhost:5001/api/region/lastweekdb (potrebna avtentikacija) 
 
-- https://localhost:5001/api/region/lastweekdb?Authentication=admin:000000
-ali
-- https://localhost:5001/api/region/lastweekdb?Authentication=YWRtaW46MDAwMDAw
+- https://localhost:5001/api/region/lastweekdb
 
-V postmanu dodaj sledeč params:
-key: Authentication 
-value: admin:000000 // (base64 YWRtaW46MDAwMDAw)
+V postmanu dodaj sledeč headers:
+key: Authorization 
+value: basic YWRtaW46MDAwMDAw // (base64 decode admin:000000)
 
