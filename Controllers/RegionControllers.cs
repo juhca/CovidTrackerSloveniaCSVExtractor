@@ -1,17 +1,18 @@
 ﻿using IndigoLabs2.Contract;
 using IndigoLabs2.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IndigoLabs2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/region")]
     [ApiController]
-    public class CSVControllers : ControllerBase
+    public class RegionControllers : ControllerBase
     {
         private readonly IRepositoryManager _repository;
         private readonly ICSVService _CSVService;
-        public CSVControllers(IRepositoryManager repository, ICSVService csvService)
+        public RegionControllers(IRepositoryManager repository, ICSVService csvService)
         {
             _repository = repository;
             _CSVService = csvService;
@@ -47,6 +48,7 @@ namespace IndigoLabs2.Controllers
             return Ok(lastWeek);
         }
 
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
