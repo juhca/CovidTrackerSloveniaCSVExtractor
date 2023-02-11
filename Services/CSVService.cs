@@ -36,7 +36,7 @@ namespace IndigoLabs2.Services
                 throw new RegionNotValidException(region);
             }
 
-            string csv = await DownloadCSVAsync();
+            string csv = await DownloadCSVAsync(false);
             var splitList = csv.Trim().Split('\n');
             var columns = splitList[0].Replace('.', '_').Split(',');
             List<dynamic> output = new List<dynamic>();
@@ -101,7 +101,7 @@ namespace IndigoLabs2.Services
             string regionFulName = ((System.ComponentModel.DataAnnotations.DisplayAttribute)csvColumnIndex.GetType().GetMember(csvColumnIndex.ToString()).First().GetCustomAttributes(true).First()).Name + " (" + csvColumnIndex + ")";
 
             List<CSVCase> finalResult = new List<CSVCase>();
-            string csv = await DownloadCSVAsync();
+            string csv = await DownloadCSVAsync(true);
             List<CSVRegionCases> regionsCases = await _repositoryManager.CSV.GetRecordsByDate(dateTo, dateFrom);           
 
             foreach (var dailyCase in regionsCases)
@@ -124,7 +124,7 @@ namespace IndigoLabs2.Services
 
         async Task<List<CSVRegionLastWeek>> ICSVService.GetRegionLastWeek()
         {
-            string csv = await DownloadCSVAsync();
+            string csv = await DownloadCSVAsync(false);
 
             string[] splitList = csv.Trim().Split('\n');
 
@@ -164,7 +164,7 @@ namespace IndigoLabs2.Services
         async Task<List<CSVRegionLastWeek>> ICSVService.GetRegionLastWeekDB()
         {
             // zafilaj bazo
-            string csv = await DownloadCSVAsync();
+            string csv = await DownloadCSVAsync(true);
             List<CSVRegionLastWeek> output = new List<CSVRegionLastWeek>();
 
             List<CSVRegionCases> lastSevenRecords = await _repositoryManager.CSV.GetLastSevenRecords();
@@ -200,10 +200,13 @@ namespace IndigoLabs2.Services
             return output.OrderByDescending(x => x.AvgDailyCases).ToList();
         }
 
-        public async Task<string> DownloadCSVAsync()
+        public async Task<string> DownloadCSVAsync(bool saveToDb)
         {
             using var client = new HttpClient();
             var response = await client.GetStringAsync(csvUrl);
+
+            if(!saveToDb) 
+                return response.ToString();
 
             string[] csv = response.ToString().Trim().Split('\n');
             for(int i = 1; i < csv.Length; i++)
@@ -232,6 +235,5 @@ namespace IndigoLabs2.Services
             int result;
             return Int32.TryParse(value, out result) ? result : 0;
         }
-
     }
 }
