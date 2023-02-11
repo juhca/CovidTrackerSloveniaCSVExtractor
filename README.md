@@ -15,7 +15,7 @@ https://localhost:5001/api/region/cases
 - https://localhost:5001/api/region/cases?Region=mb&DateFrom=2020/05/05&DateTo=2020/05/20
 
 Params:
-- Region ((LJ, CE, KR, NM, KK, KP, MB, MS, NG, PO, SG, ZA)
+- Region (LJ, CE, KR, NM, KK, KP, MB, MS, NG, PO, SG, ZA)
 - DateFrom (2020/05/05, 2020-05-05, 2020.05.05, 05.05.2020, 05 May 2020, May 05 2020)
 - DateTo (2020/05/20, 2020-05-20, 2020.05.20, 05.20.2020, 20 May 2020, May 20 2020)
 
@@ -25,7 +25,7 @@ https://localhost:5001/api/region/casesdb
 - https://localhost:5001/api/region/casesdb?Region=mb&DateFrom=May 05 2020&DateTo=2020/05/20
 
 Params:
-- Region ((LJ, CE, KR, NM, KK, KP, MB, MS, NG, PO, SG, ZA)
+- Region (LJ, CE, KR, NM, KK, KP, MB, MS, NG, PO, SG, ZA)
 - DateFrom (2020/05/05, 2020-05-05, 2020.05.05, 05.05.2020, 05 May 2020, May 05 2020)
 - DateTo (2020/05/20, 2020-05-20, 2020.05.20, 05.20.2020, 20 May 2020, May 20 2020)
 
