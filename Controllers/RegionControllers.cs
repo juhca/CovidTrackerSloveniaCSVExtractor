@@ -24,8 +24,16 @@ namespace IndigoLabs2.Controllers
         [Route("cases")]
         public async Task<IActionResult> GetRegionCases(string region, DateTime dateFrom, DateTime dateTo)
         {
-            var regionCases = await _CSVService.GetRegionsCases(region, dateFrom, dateTo);
-            return Ok(regionCases);
+            try
+            {
+                var regionCases = await _CSVService.GetRegionsCases(region, dateFrom, dateTo);
+                return Ok(regionCases);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet]
@@ -34,8 +42,15 @@ namespace IndigoLabs2.Controllers
         [Route("casesdb")]
         public async Task<IActionResult> GetRegionCasesDB(string region, DateTime dateFrom, DateTime dateTo)
         {
-            var regionCases = await _CSVService.GetRegionsCasesDB(region, dateFrom, dateTo);
-            return Ok(regionCases);
+            try
+            {
+                var regionCases = await _CSVService.GetRegionsCasesDB(region, dateFrom, dateTo);
+                return Ok(regionCases);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -44,19 +59,35 @@ namespace IndigoLabs2.Controllers
         [Route("lastweek")]
         public async Task<IActionResult> GetRegionLastWeek()
         {
-            var lastWeek = await _CSVService.GetRegionLastWeek();
-            return Ok(lastWeek);
+            try
+            {
+                var lastWeek = await _CSVService.GetRegionLastWeek();
+                return Ok(lastWeek);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType (StatusCodes.Status418ImATeapot)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Route("lastweekdb")]
         public async Task<IActionResult> GetRegionLastWeekDB()
         {
-            var lastWeek = await _CSVService.GetRegionLastWeekDB();
-            return Ok(lastWeek);
+            try
+            {
+                var lastWeek = await _CSVService.GetRegionLastWeekDB();
+                return Ok(lastWeek);
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest(ex.Message);    
+            }
         }
     }
 }

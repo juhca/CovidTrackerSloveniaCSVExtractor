@@ -2,6 +2,7 @@
 using IndigoLabs2.Enums;
 using IndigoLabs2.Exceptions.CSVServiceExceptions;
 using IndigoLabs2.Models;
+using System;
 using System.Dynamic;
 using System.Reflection;
 
@@ -18,17 +19,11 @@ namespace IndigoLabs2.Services
 
         async Task<List<CSVCase>> ICSVService.GetRegionsCases(string region, DateTime dateFrom, DateTime dateTo)
         {
-            if (string.IsNullOrEmpty(region))
-            {
-                throw new RegionNotSpecifiedException();
-            }
+            if (string.IsNullOrEmpty(region)) throw new RegionNotSpecifiedException();
 
             if (dateTo > DateTime.Now || dateTo == DateTime.MinValue) dateTo = DateTime.Now;
 
-            if ((dateFrom > dateTo) || (dateFrom > DateTime.Now))
-            {
-                throw new TimeIntervalNotValidException();
-            }
+            if ((dateFrom > dateTo) || (dateFrom > DateTime.Now)) throw new TimeIntervalNotValidException();            
 
             RegionsEnums.Regions csvColumnIndex;
             if (!Enum.TryParse(region, true, out csvColumnIndex))
@@ -41,7 +36,31 @@ namespace IndigoLabs2.Services
             var columns = splitList[0].Replace('.', '_').Split(',');
             List<dynamic> output = new List<dynamic>();
 
+            int startingIndex = Array.IndexOf(splitList, dateFrom);
 
+            List<CSVCase> finalResult = new List<CSVCase>();
+            string regionFulName = ((System.ComponentModel.DataAnnotations.DisplayAttribute)csvColumnIndex.GetType().GetMember(csvColumnIndex.ToString()).First().GetCustomAttributes(true).First()).Name + " (" + csvColumnIndex + ")";
+            region = region.ToLower();
+
+            for (int i = 1; i < splitList.Length; i++)
+            {
+                var splitRow = splitList[i].Split(",");
+                if (DateTime.Parse(splitRow[0]) < dateFrom) continue;
+                if (DateTime.Parse(splitRow[0]) > dateTo) break;
+
+                finalResult.Add( new CSVCase {
+                    Date = DateTime.Parse(splitRow[0]),
+                    Region = regionFulName,
+                    RegionCasesActive = TryParseString2Int(splitRow[(int)csvColumnIndex + 0]),
+                    RegionDeceasedToDate = TryParseString2Int(splitRow[(int)csvColumnIndex + 2]),
+                    RegionVaccinatedFirstToDate = TryParseString2Int(splitRow[(int)csvColumnIndex + 3]),
+                    RegionVaccinatedSecondToDate = TryParseString2Int(splitRow[(int)csvColumnIndex + 4])
+                });
+            }
+
+            /*
+             // bolj robustna metoda, ce se csv stolpci kaj spremenijo
+            
             for (int i = 1; i < splitList.Length; i++)
             {
                 var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
@@ -68,30 +87,24 @@ namespace IndigoLabs2.Services
                 {
                     Date = DateTime.Parse(((IDictionary<string, object>)record)["date"].ToString()),
                     Region = regionFulName,
-                    RegionCasesActive = TryParse(((IDictionary<string, object>)record)["region_" + region + "_cases_active"].ToString()),
-                    RegionDeceasedToDate = TryParse(((IDictionary<string, object>)record)["region_" + region + "_deceased_todate"].ToString()),
-                    RegionVaccinatedFirstToDate = TryParse(((IDictionary<string, object>)record)["region_" + region + "_vaccinated_1st_todate"].ToString()),
-                    RegionVaccinatedSecondToDate = TryParse(((IDictionary<string, object>)record)["region_" + region + "_vaccinated_2nd_todate"].ToString())
+                    RegionCasesActive = TryParseString2Int(((IDictionary<string, object>)record)["region_" + region + "_cases_active"].ToString()),
+                    RegionDeceasedToDate = TryParseString2Int(((IDictionary<string, object>)record)["region_" + region + "_deceased_todate"].ToString()),
+                    RegionVaccinatedFirstToDate = TryParseString2Int(((IDictionary<string, object>)record)["region_" + region + "_vaccinated_1st_todate"].ToString()),
+                    RegionVaccinatedSecondToDate = TryParseString2Int(((IDictionary<string, object>)record)["region_" + region + "_vaccinated_2nd_todate"].ToString())
 
                 });
-            }
+            }*/
 
             return finalResult;
         }
 
         async Task<List<CSVCase>> ICSVService.GetRegionsCasesDB(string region, DateTime dateFrom, DateTime dateTo)
         {
-            if (string.IsNullOrEmpty(region))
-            {
-                throw new RegionNotSpecifiedException();
-            }
+            if (string.IsNullOrEmpty(region)) throw new RegionNotSpecifiedException();
 
             if (dateTo > DateTime.Now || dateTo == DateTime.MinValue) dateTo = DateTime.Now;
 
-            if ((dateFrom > dateTo) || (dateFrom > DateTime.Now))
-            {
-                throw new TimeIntervalNotValidException();
-            }
+            if ((dateFrom > dateTo) || (dateFrom > DateTime.Now)) throw new TimeIntervalNotValidException();
 
             RegionsEnums.Regions csvColumnIndex;
             if (!Enum.TryParse(region, true, out csvColumnIndex))
@@ -222,7 +235,7 @@ namespace IndigoLabs2.Services
                 PropertyInfo[] properties = typeof(CSVRegionCases).GetProperties();
                 for(int j = 0; j < properties.Length; j++)
                 {
-                    properties[j].SetValue(csvDailyCase, (j == 0) ? recordDate : TryParse(dailyCaseRow[j]));
+                    properties[j].SetValue(csvDailyCase, (j == 0) ? recordDate : TryParseString2Int(dailyCaseRow[j]));
                 }
                 await _repositoryManager.CSV.CreateCSVDailyCase(csvDailyCase);
             }
@@ -230,7 +243,7 @@ namespace IndigoLabs2.Services
             return response.ToString();
         }
 
-        public static int TryParse(string value)
+        public static int TryParseString2Int(string value)
         {
             int result;
             return Int32.TryParse(value, out result) ? result : 0;
