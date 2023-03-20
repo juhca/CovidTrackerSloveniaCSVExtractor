@@ -1,9 +1,7 @@
-# IndigoLabs2
+# Slo Covid tracker CSV extractor
 
 Kako zaženeš aplikacijo? 
-Potegni dol realease, odpakiraj in zaženi IndigoLabs2.exe.
-
-https://github.com/juhca/IndigoLabs2/releases
+Potegni dol realease, odpakiraj in zaženi exe.
 
 
 Testiranje API:
